@@ -5,7 +5,7 @@ from django.db.models import Count, Avg, Case, When, BooleanField
 
 # List of all authors with their book count
 class AuthorListView(generics.ListAPIView):
-    queryset = Author.objects.annotate(book_count=Count('book'))
+    queryset = Author.objects.annotate(book_count=Count('books'))
     serializer_class = AuthorSerializer
 
 # List of all books with authors using select_related for optimization
@@ -20,7 +20,7 @@ class ReviewListView(generics.ListAPIView):
 
 # List of authors who have written more than 1 book
 class AuthorsWithMultipleBooksView(generics.ListAPIView):
-    queryset = Author.objects.annotate(book_count=Count('book')).filter(book_count__gt=1)
+    queryset = Author.objects.annotate(book_count=Count('books')).filter(book_count__gt=1)
     serializer_class = AuthorSerializer
 
 # List of books with a boolean field 'has_reviews' to indicate if a book has reviews
@@ -36,5 +36,18 @@ class BookWithReviewsView(generics.ListAPIView):
 
 # Top 3 authors based on the number of books
 class TopAuthorsView(generics.ListAPIView):
-    queryset = Author.objects.annotate(book_count=Count('book')).order_by('-book_count')[:3]
+    queryset = Author.objects.annotate(book_count=Count('books')).order_by('-book_count')[:3]
     serializer_class = AuthorSerializer
+
+
+class AuthorCreateView(generics.CreateAPIView):
+    queryset= Author.objects.all()
+    serializer_class= AuthorSerializer
+
+class BookCreateView(generics.CreateAPIView):
+    queryset= Books.objects.all()
+    serializer_class= BookSerializer
+    
+class ReviewCreateView(generics.CreateAPIView):
+    queryset= Review.objects.all()
+    serializer_class= ReviewSerializers
