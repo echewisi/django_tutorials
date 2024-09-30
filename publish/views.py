@@ -1,7 +1,8 @@
 from rest_framework import generics
 from .models import Author, Books, Review
 from .serializers import AuthorSerializer, BookSerializer, ReviewSerializers
-from django.db.models import Count, Avg, Case, When, BooleanField
+from django.db.models import Count, Avg, Case, When, BooleanField, Sum
+from django.db.models import Q, F
 
 # List of all authors with their book count
 class AuthorListView(generics.ListAPIView):
@@ -51,3 +52,22 @@ class BookCreateView(generics.CreateAPIView):
 class ReviewCreateView(generics.CreateAPIView):
     queryset= Review.objects.all()
     serializer_class= ReviewSerializers
+
+
+
+
+#Advanced filtering:
+#books where the title starts with 'A' or 'B' and published after 2000
+book= Books.objects.filter(
+    Q(title__startswith= 'A') | Q(title__startswith= 'B'),
+    published_date__year__gt=2000
+    
+)
+
+#Books where the number of pages is greater than the number of reviews
+books= Books.objects.annotate(review_count= Count('review')).filter(pages__gt= F('review_count'))
+
+#this would return books greater than 2010
+books_greater_than_2010= Books.objects.filter(published_date__year__gt= 2010)
+
+books= Books.objects.filter(title__icontains= 'Django')

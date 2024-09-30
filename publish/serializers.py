@@ -18,6 +18,11 @@ class BookSerializer(serializers.ModelSerializer):
         author, _ = Author.objects.get_or_create(**author_data)
         book= Books.objects.create(author= author, **validated_data)
         return book
+    
+    def validate(self, data):
+        if data['published_date'] > '12/12/2024':
+            return serializers.ValidationError('Publish date not set right!')
+        return data
 
 class ReviewSerializers(serializers.ModelSerializer):
     book= BookSerializer()
